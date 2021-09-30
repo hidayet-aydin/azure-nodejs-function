@@ -1,5 +1,66 @@
 const { GraphQLClient, gql } = require("graphql-request");
 
+const shortQuery = (name) =>
+  (query = gql`
+{
+  getCityByName(name: "${name}") {
+    name
+    country
+    weather {
+      summary {
+        title
+        description
+      }
+      temperature {
+        actual
+        feelsLike
+        min
+        max
+      }
+      timestamp
+    }
+  }
+}
+`);
+
+const longQuery = (name) =>
+  (query = gql`
+  {
+    getCityByName(name: "${name}") {
+      id
+      name
+      country
+      coord {
+        lon
+        lat
+      }
+      weather {
+        summary {
+          title
+          description
+          icon
+        }
+        temperature {
+          actual
+          feelsLike
+          min
+          max
+        }
+        wind {
+          speed
+          deg
+        }
+        clouds {
+          all
+          visibility
+          humidity
+        }
+        timestamp
+      }
+    }
+  }
+`);
+
 const testPoint = async (context, req) => {
   context.log("JavaScript HTTP trigger function processed a request.");
 
@@ -10,6 +71,7 @@ const testPoint = async (context, req) => {
     });
   }
 
+  const detail = req.query.detail || (req.body && req.body.detail);
   const cityName = req.query.cityName || (req.body && req.body.cityName);
   if (!cityName) {
     return (context.res = {
@@ -22,27 +84,8 @@ const testPoint = async (context, req) => {
     const graphQLClient = new GraphQLClient(
       "https://graphql-weather-api.herokuapp.com/"
     );
-    const query = gql`
-    {
-      getCityByName(name: "${cityName}") {
-        name
-        country
-        weather {
-          summary {
-            title
-            description
-          }
-          temperature {
-            actual
-            feelsLike
-            min
-            max
-          }
-          timestamp
-        }
-      }
-    }
-    `;
+
+    const query = detail ? longQuery(cityName) : shortQuery(cityName);
     const data = await graphQLClient.request(query);
     if (!data.getCityByName) {
       return (context.res = {
