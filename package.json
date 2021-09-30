@@ -1,7 +1,12 @@
 {
   "name": "poilabs-testing",
   "version": "1.0.0",
-  "description": "",
+  "description": "The graphql-weather-api which is a graphql service is converted a RESTful service using with the graphql-request module.",
+  "author": {
+    "name": "hidayet-aydin",
+    "email": "aydin.hid@gmail.com"
+  },
+  "license": "ISC",
   "scripts": {
     "start": "func start",
     "test": "echo \"No tests yet...\""
